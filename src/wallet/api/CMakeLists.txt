@@ -78,6 +78,17 @@ target_link_libraries(wallet_api
   PRIVATE
     ${EXTRA_LIBRARIES})
 
+add_library(pywallet_api MODULE python/pywallet_api.cpp)
+
+target_link_libraries(pywallet_api
+      PUBLIC
+        wallet_api
+      PRIVATE
+        pybind11::module)
+
+set_target_properties(pywallet_api PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}"
+                                             SUFFIX "${PYTHON_MODULE_EXTENSION}")
+
 set_property(TARGET wallet_api PROPERTY EXCLUDE_FROM_ALL TRUE)
 set_property(TARGET obj_wallet_api PROPERTY EXCLUDE_FROM_ALL TRUE)
 

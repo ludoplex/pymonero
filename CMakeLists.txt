@@ -42,6 +42,7 @@ endif()
 cmake_minimum_required(VERSION 2.8.7)
 
 project(monero)
+add_subdirectory(pybind11)
 
 function (die msg)
   if (NOT WIN32)
@@ -692,7 +693,7 @@ else()
   endif(ARM)
 
   if(ANDROID AND NOT BUILD_GUI_DEPS STREQUAL "ON" OR IOS)
-    #From Android 5: "only position independent executables (PIE) are supported" 
+    #From Android 5: "only position independent executables (PIE) are supported"
     message(STATUS "Enabling PIE executable")
     set(PIC_FLAG "")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIE")
@@ -880,7 +881,7 @@ if(BUILD_DOCUMENTATION)
 endif()
 
 # when ON - will install libwallet_merged into "lib"
-option(BUILD_GUI_DEPS "Build GUI dependencies." OFF)
+option(BUILD_GUI_DEPS "Build GUI dependencies." ON)
 
 # This is not nice, distribution packagers should not enable this, but depend
 # on libunbound shipped with their distribution instead

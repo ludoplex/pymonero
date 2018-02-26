@@ -56,9 +56,9 @@ public:
     // next two methods are deprecated - use the above version which allow setting of a password
     virtual Wallet * recoveryWallet(const std::string &path, const std::string &mnemonic, bool testnet, uint64_t restoreHeight);
     // deprecated: use createWalletFromKeys(..., password, ...) instead
-    virtual Wallet * createWalletFromKeys(const std::string &path, 
+    virtual Wallet * createWalletFromKeys(const std::string &path,
                                                     const std::string &language,
-                                                    bool testnet, 
+                                                    bool testnet,
                                                     uint64_t restoreHeight,
                                                     const std::string &addressString,
                                                     const std::string &viewKeyString,
@@ -79,9 +79,9 @@ public:
     bool startMining(const std::string &address, uint32_t threads = 1, bool background_mining = false, bool ignore_battery = true);
     bool stopMining();
     std::string resolveOpenAlias(const std::string &address, bool &dnssec_valid) const;
-
-private:
     WalletManagerImpl() {}
+private:
+    //WalletManagerImpl() {}
     friend struct WalletManagerFactory;
     std::string m_daemonAddress;
     std::string m_errorString;
