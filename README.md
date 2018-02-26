@@ -1,5 +1,6 @@
 # Python pybind11 bindings play testing
 
+- clone with recursive mode (to pull the submodule pybind11 too)
 - build monero as normal
 - then ```$ cd build/release/src/wallet/api/```
 - ``` $ python   ```
