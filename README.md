@@ -1,3 +1,21 @@
+# Python pybind11 bindings play testing
+
+- build monero as normal
+- then ```$ cd build/release/src/wallet/api/```
+- ``` $ python   ```
+- ``` >>> import pywallet_api ```
+- ``` >>> m = pywallet_api.WalletManagerImpl() ```
+- ``` >>> print(m.walletExists('')) ``` // point to an existing wallet file to show that it works
+
+
+Developed on Ubuntu with python 3.5 only (Don't think it works with legacy 2.7)
+
+Check differences with : ```  git show c600e47f7fb1c9635d845216f87c1e62adb9b43e  ```
+
+---------------------------------------------------------------------------------------------------------------------
+
+
+
 # Monero
 
 Copyright (c) 2014-2018 The Monero Project.   
