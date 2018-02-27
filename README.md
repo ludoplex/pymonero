@@ -16,6 +16,43 @@ Note : You can verify is wallet was created with :
 
 Developed on Ubuntu with python 3.5 only (Don't think it works with legacy 2.7)
 
+
+# Python wallet/api Module 
+
+- Defines what gets added to a python's module. 
+- Located at monero/src/wallet/api/python/pywallet_api.cpp
+
+Latest version: 
+```
+PYBIND11_MODULE(pywallet_api, m) {
+    m.doc() = "pbdoc() ..";
+
+    py::class_<PyWallet>(m, "PyWallet")
+        .def(py::init<>())
+        .def_property("m_wallet", &PyWallet::getWallet, &PyWallet::setWallet);
+
+    py::class_<PyWalletManager>(m, "PyWalletManager")
+        .def(py::init<>())
+        .def("walletExists", &PyWalletManager::walletExists)
+        .def_property("manager", &PyWalletManager::getManager, &PyWalletManager::setManager)
+        .def("createWallet", &PyWalletManager::createWallet)
+        ;
+
+    py::class_<PyWalletManagerFactory>(m, "PyWalletManagerFactory")
+        .def(py::init<>())
+        .def("getWalletManager", &PyWalletManagerFactory::getWalletManager);
+
+  //  m.def("getWalletManager", &Monero::WalletManagerFactory::getWalletManager, py::return_value_policy::copy);
+
+  #ifdef VERSION_INFO
+      m.attr("__version__") = VERSION_INFO;
+  #else
+      m.attr("__version__") = "dev";
+  #endif
+}
+
+```
+
 ---------------------------------------------------------------------------------------------------------------------
 
 
