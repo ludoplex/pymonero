@@ -5,13 +5,16 @@
 - then ```$ cd build/release/src/wallet/api/```
 - ``` $ python   ```
 - ``` >>> import pywallet_api ```
-- ``` >>> m = pywallet_api.WalletManagerImpl() ```
-- ``` >>> print(m.walletExists('')) ``` // point to an existing wallet file to show that it works
+- ``` >>> wallet_factory = pywallet_api.PyWalletManagerFactory() ```
+- ``` >>> wm = wallet_factory.getWalletManager() ```
+- ``` >>> pywallet = wm.createWallet('/choose/path/to/wallet', '', 'English', 1) ``` //1 stands for true (testnet)
+- ``` >>> print(pywallet) ``` // after wallet creation ouput you should verify that we have a python wallet reference to work with
 
+Note : You can verify is wallet was created with : 
+- ``` >>> res = wm.walletExists('/path/to/wallet') ```
+- ``` >>> print(res) ```
 
 Developed on Ubuntu with python 3.5 only (Don't think it works with legacy 2.7)
-
-Check differences with : ```  git show c600e47f7fb1c9635d845216f87c1e62adb9b43e  ```
 
 ---------------------------------------------------------------------------------------------------------------------
 
