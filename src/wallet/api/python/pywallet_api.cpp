@@ -1,5 +1,12 @@
-#include "../wallet_manager.h"
+#include "../wallet2_api.h"
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
 #include <pybind11/pybind11.h>
+
+
+#include "pywallet.cpp"
+#include "pywallet_manager.cpp"
+#include "pywallet_manager_factory.cpp"
 
 namespace py = pybind11;
 
@@ -19,16 +26,24 @@ namespace py = pybind11;
 //     }
 // };
 
+
 PYBIND11_MODULE(pywallet_api, m) {
     m.doc() = "pbdoc() ..";
 
-    py::class_<Monero::WalletManagerImpl>(m, "WalletManagerImpl")
+    py::class_<PyWallet>(m, "PyWallet")
         .def(py::init<>())
-        .def("walletExists", &Monero::WalletManagerImpl::walletExists);
+        .def_property("m_wallet", &PyWallet::getWallet, &PyWallet::setWallet);
 
-    // py::class_<Monero::WalletManagerFactory>(m, "WalletManagerFactory")
-    //     .def(py::init<>())
-    //     .def("getWalletManager", &Monero::WalletManagerFactory::getWalletManager);
+    py::class_<PyWalletManager>(m, "PyWalletManager")
+        .def(py::init<>())
+        .def("walletExists", &PyWalletManager::walletExists)
+        .def_property("manager", &PyWalletManager::getManager, &PyWalletManager::setManager)
+        .def("createWallet", &PyWalletManager::createWallet)
+        ;
+
+    py::class_<PyWalletManagerFactory>(m, "PyWalletManagerFactory")
+        .def(py::init<>())
+        .def("getWalletManager", &PyWalletManagerFactory::getWalletManager);
 
   //  m.def("getWalletManager", &Monero::WalletManagerFactory::getWalletManager, py::return_value_policy::copy);
 
