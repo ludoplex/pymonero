@@ -2,54 +2,191 @@
 
 - clone with recursive mode (to pull the submodule pybind11 too)
 - build monero as normal
-- then ```$ cd build/release/src/wallet/api/```
+- then as an Example : ```$ cd build/release/src/wallet/api/```
 - ``` $ python   ```
 - ``` >>> import pywallet_api ```
-- ``` >>> wallet_factory = pywallet_api.PyWalletManagerFactory() ```
-- ``` >>> wm = wallet_factory.getWalletManager() ```
-- ``` >>> pywallet = wm.createWallet('/choose/path/to/wallet', '', 'English', 1) ``` //1 stands for true (testnet)
-- ``` >>> print(pywallet) ``` // after wallet creation ouput you should verify that we have a python wallet reference to work with
+- ``` >>> wm = pywallet_api.WalletManagerFactory.getWalletManager() ```
+- ``` >>> wallet = wm.openWallet('/path/to/wallet','',1) ``` //open your wallet
+- ``` >>> print(wallet) ``` // after wallet creation ouput you should verify that we have a python wallet reference to work with
 
-Note : You can verify is wallet was created with : 
+Note : You can verify is wallet was created with :
 - ``` >>> res = wm.walletExists('/path/to/wallet') ```
 - ``` >>> print(res) ```
 
 Developed on Ubuntu with python 3.5 only (Don't think it works with legacy 2.7)
 
 
-# Python wallet/api Module 
+# Python wallet/api Module
 
-- Defines what gets added to a python's module. 
+- Defines what gets added to a python's module.
 - Located at monero/src/wallet/api/python/pywallet_api.cpp
 
-Latest version: 
+Latest version:
 ```
 PYBIND11_MODULE(pywallet_api, m) {
     m.doc() = "pbdoc() ..";
 
-    py::class_<PyWallet>(m, "PyWallet")
-        .def(py::init<>())
-        .def_property("m_wallet", &PyWallet::getWallet, &PyWallet::setWallet);
+    py::enum_<Monero::Wallet::ConnectionStatus>(m, "ConnectionStatus")
+        .value("ConnectionStatus_Disconnected", Monero::Wallet::ConnectionStatus::ConnectionStatus_Disconnected)
+        .value("ConnectionStatus_Connected", Monero::Wallet::ConnectionStatus::ConnectionStatus_Connected)
+        .value("ConnectionStatus_WrongVersion", Monero::Wallet::ConnectionStatus::ConnectionStatus_WrongVersion)
+        .export_values();
 
-    py::class_<PyWalletManager>(m, "PyWalletManager")
+    py::enum_<Monero::Wallet::Status>(m, "Status")
+        .value("Status_Ok", Monero::Wallet::Status::Status_Ok)
+        .value("Status_Error", Monero::Wallet::Status::Status_Error)
+        .value("Status_Critical", Monero::Wallet::Status::Status_Critical)
+        .export_values();
+
+    py::class_<Monero::UnsignedTransaction>(m, "UnsignedTransaction")
+        .def("status", &Monero::UnsignedTransaction::status)
+        .def("errorString", &Monero::UnsignedTransaction::errorString)
+        .def("amount", &Monero::UnsignedTransaction::amount)
+        .def("fee", &Monero::UnsignedTransaction::fee)
+        .def("mixin", &Monero::UnsignedTransaction::mixin)
+        .def("confirmationMessage", &Monero::UnsignedTransaction::confirmationMessage)
+        .def("paymentId", &Monero::UnsignedTransaction::paymentId)
+        .def("recipientAddress", &Monero::UnsignedTransaction::recipientAddress)
+        .def("minMixinCount", &Monero::UnsignedTransaction::minMixinCount)
+        .def("txCount", &Monero::UnsignedTransaction::txCount)
+        .def("sign", &Monero::UnsignedTransaction::sign)
+        ;
+
+    py::class_<PyWallet>(m, "Wallet")
+        .def(py::init<>())
+        .def_property("m_wallet", &PyWallet::getWallet, &PyWallet::setWallet)
+        .def("seed", &PyWallet::seed)
+        .def("getSeedLanguage", &PyWallet::getSeedLanguage)
+        .def("setSeedLanguage", &PyWallet::setSeedLanguage)
+        .def("status", &PyWallet::status)
+        .def("errorString", &PyWallet::errorString)
+        .def("setPassword", &PyWallet::setPassword)
+        .def("address", &PyWallet::address)
+        .def("mainAddress", &PyWallet::mainAddress)
+        .def("path", &PyWallet::path)
+        .def("testnet", &PyWallet::testnet)
+        .def("hardForkInfo", &PyWallet::hardForkInfo)
+        .def("useForkRules", &PyWallet::useForkRules)
+        .def("integratedAddress", &PyWallet::integratedAddress)
+        .def("secretViewKey", &PyWallet::secretViewKey)
+        .def("publicViewKey", &PyWallet::publicViewKey)
+        .def("secretSpendKey", &PyWallet::secretSpendKey)
+        .def("publicSpendKey", &PyWallet::publicSpendKey)
+        .def("store", &PyWallet::store)
+        .def("filename", &PyWallet::filename)
+        .def("keysFilename", &PyWallet::keysFilename)
+        .def("init", &PyWallet::init)
+        //.def_static("init", &PyWallet::init)
+        .def("createWatchOnly", &PyWallet::createWatchOnly)
+        .def("setRefreshFromBlockHeight", &PyWallet::setRefreshFromBlockHeight)
+        .def("getRefreshFromBlockHeight", &PyWallet::getRefreshFromBlockHeight)
+        .def("setRecoveringFromSeed", &PyWallet::setRecoveringFromSeed)
+        .def("connectToDaemon", &PyWallet::connectToDaemon)
+        .def("setTrustedDaemon", &PyWallet::setTrustedDaemon)
+        .def("trustedDaemon", &PyWallet::trustedDaemon)
+        .def("balance", &PyWallet::balance)
+        .def("balanceAll", &PyWallet::balanceAll)
+        .def("unlockedBalance", &PyWallet::unlockedBalance)
+        .def("unlockedBalanceAll", &PyWallet::unlockedBalanceAll)
+        .def("watchOnly", &PyWallet::watchOnly)
+        .def("blockChainHeight", &PyWallet::blockChainHeight)
+        .def("approximateBlockChainHeight", &PyWallet::approximateBlockChainHeight)
+        .def("daemonBlockChainHeight", &PyWallet::daemonBlockChainHeight)
+        .def("daemonBlockChainTargetHeight", &PyWallet::daemonBlockChainTargetHeight)
+        .def("synchronized", &PyWallet::synchronized)
+        .def("displayAmount", &PyWallet::displayAmount)
+        .def("amountFromString", &PyWallet::amountFromString)
+        .def("amountFromDouble", &PyWallet::amountFromDouble)
+        .def("genPaymentId", &PyWallet::genPaymentId)
+        .def("paymentIdValid", &PyWallet::paymentIdValid)
+        .def("addressValid", &PyWallet::addressValid)
+        .def("keyValid", &PyWallet::keyValid)
+        .def("paymentIdFromAddress", &PyWallet::paymentIdFromAddress)
+        .def("maximumAllowedAmount", &PyWallet::maximumAllowedAmount)
+        // .def("init", &PyWallet::init,
+        //     py::arg("argv0"),
+        //     py::arg("default_log_base_name"))
+        .def("debug", &PyWallet::debug)
+        .def("startRefresh", &PyWallet::startRefresh)
+        .def("pauseRefresh", &PyWallet::pauseRefresh)
+        .def("refresh", &PyWallet::refresh)
+        .def("refreshAsync", &PyWallet::refreshAsync)
+        .def("setAutoRefreshInterval", &PyWallet::setAutoRefreshInterval)
+        .def("autoRefreshInterval", &PyWallet::autoRefreshInterval)
+        .def("addSubaddressAccount", &PyWallet::addSubaddressAccount)
+        .def("numSubaddressAccounts", &PyWallet::numSubaddressAccounts)
+        .def("numSubaddresses", &PyWallet::numSubaddresses)
+        .def("addSubaddress", &PyWallet::addSubaddress)
+        .def("getSubaddressLabel", &PyWallet::getSubaddressLabel)
+        .def("setSubaddressLabel", &PyWallet::setSubaddressLabel)
+        .def("submitTransaction", &PyWallet::submitTransaction)
+        .def("exportKeyImages", &PyWallet::exportKeyImages)
+        .def("importKeyImages", &PyWallet::importKeyImages)
+        .def("defaultMixin", &PyWallet::defaultMixin)
+        .def("setDefaultMixin", &PyWallet::setDefaultMixin)
+        .def("setUserNote", &PyWallet::setUserNote)
+        .def("getUserNote", &PyWallet::getUserNote)
+        .def("getTxKey", &PyWallet::getTxKey)
+        .def("checkTxKey", &PyWallet::checkTxKey)
+        .def("getTxProof", &PyWallet::getTxProof)
+        .def("checkTxProof", &PyWallet::checkTxProof)
+        .def("getSpendProof", &PyWallet::getSpendProof)
+        .def("checkSpendProof", &PyWallet::checkSpendProof)
+        .def("getReserveProof", &PyWallet::getReserveProof)
+        .def("checkReserveProof", &PyWallet::checkReserveProof)
+        .def("signMessage", &PyWallet::signMessage)
+        .def("verifySignedMessage", &PyWallet::verifySignedMessage)
+        .def("parse_uri", &PyWallet::parse_uri)
+        .def("getDefaultDataDir", &PyWallet::getDefaultDataDir)
+        .def("rescanSpent", &PyWallet::rescanSpent)
+        .def("lightWalletLogin", &PyWallet::lightWalletLogin)
+        .def("lightWalletImportWalletRequest", &PyWallet::lightWalletImportWalletRequest)
+        .def("connected", &PyWallet::connected)
+        ;
+
+    py::class_<PyWalletManager>(m, "WalletManager")
         .def(py::init<>())
         .def("walletExists", &PyWalletManager::walletExists)
         .def_property("manager", &PyWalletManager::getManager, &PyWalletManager::setManager)
         .def("createWallet", &PyWalletManager::createWallet)
+        .def("openWallet", &PyWalletManager::openWallet)
+        .def("recoveryWallet", &PyWalletManager::recoveryWallet, py::arg("path"),
+                    py::arg("password"),
+                    py::arg("mnemonic"),
+                    py::arg("testnet") = 0,
+                    py::arg("restoreHeight") = 0)
+
+        .def("createWalletFromKeys", &PyWalletManager::createWalletFromKeys, py::arg("path"),
+                    py::arg("password"),
+                    py::arg("language"),
+                    py::arg("testnet") = 0,
+                    py::arg("restoreHeight") = 0,
+                    py::arg("addressString"),
+                    py::arg("viewKeyString"),
+                    py::arg("spendKeyString"))
+
+        .def("closeWallet", &PyWalletManager::closeWallet)
+        .def("verifyWalletPassword", &PyWalletManager::verifyWalletPassword)
+        .def("findWallets", &PyWalletManager::findWallets)
+        .def("errorString", &PyWalletManager::errorString)
+        .def("setDaemonAddress", &PyWalletManager::setDaemonAddress)
+        .def("connected", &PyWalletManager::connected)
+        .def("blockchainHeight", &PyWalletManager::blockchainHeight)
+        .def("blockchainTargetHeight", &PyWalletManager::blockchainTargetHeight)
+        .def("networkDifficulty", &PyWalletManager::networkDifficulty)
+        .def("miningHashRate", &PyWalletManager::miningHashRate)
+        .def("blockTarget", &PyWalletManager::blockTarget)
+        .def("isMining", &PyWalletManager::isMining)
+        .def("startMining", &PyWalletManager::startMining)
+        .def("stopMining", &PyWalletManager::stopMining)
+        .def("resolveOpenAlias", &PyWalletManager::resolveOpenAlias)
         ;
 
-    py::class_<PyWalletManagerFactory>(m, "PyWalletManagerFactory")
-        .def(py::init<>())
-        .def("getWalletManager", &PyWalletManagerFactory::getWalletManager);
+    py::class_<PyWalletManagerFactory>(m, "WalletManagerFactory")
+        //.def(py::init<>())
+        .def_static("setLogLevel", &PyWalletManagerFactory::setLogLevel)
+        .def_static("getWalletManager", &PyWalletManagerFactory::getWalletManager);
 
-  //  m.def("getWalletManager", &Monero::WalletManagerFactory::getWalletManager, py::return_value_policy::copy);
-
-  #ifdef VERSION_INFO
-      m.attr("__version__") = VERSION_INFO;
-  #else
-      m.attr("__version__") = "dev";
-  #endif
-}
 
 ```
 
@@ -148,7 +285,7 @@ If you want to help out, see [CONTRIBUTING](CONTRIBUTING.md) for a set of guidel
 ## Scheduled mandatory software upgrades
 
 Monero uses a fixed-schedule mandatory software upgrade (hard fork) mechanism to implement new features. This means that users of Monero (end users and service providers) need to run current versions and upgrade their software on a regular schedule. Mandatory software upgrades occur during the months of March and September. The required software for these upgrades will be available prior to the scheduled date. Please check the repository prior to this date for the proper Monero software version. Below is the historical schedule and the projected schedule for the next upgrade.
-Dates are provided in the format YYYY-MM-DD. 
+Dates are provided in the format YYYY-MM-DD.
 
 
 | Software upgrade block height | Date       | Fork version | Minimum Monero version | Recommended Monero version | Details                                                                            |  
@@ -160,11 +297,11 @@ Dates are provided in the format YYYY-MM-DD.
 | 1400000                        | 2017-09-16 | v6                | v0.11.0.0              | v0.11.0.0                  | Allow only RingCT transactions, allow only >= ringsize 5      |
 | XXXXXXX                        | 2018-03-XX | XX                | XXXXXXXXX              | XXXXXXXXX                  | XXXXXX
 
-X's indicate that these details have not been determined as of commit date, 2017-09-20. 
+X's indicate that these details have not been determined as of commit date, 2017-09-20.
 
 ## Release staging schedule and protocol
 
-Approximately three months prior to a scheduled mandatory software upgrade, a branch from Master will be created with the new release version tag. Pull requests that address bugs should then be made to both Master and the new release branch. Pull requests that require extensive review and testing (generally, optimizations and new features) should *not* be made to the release branch. 
+Approximately three months prior to a scheduled mandatory software upgrade, a branch from Master will be created with the new release version tag. Pull requests that address bugs should then be made to both Master and the new release branch. Pull requests that require extensive review and testing (generally, optimizations and new features) should *not* be made to the release branch.
 
 ## Installing Monero from a package
 
@@ -200,7 +337,7 @@ Installing a snap is very quick. Snaps are secure. They are isolated with all of
 
         # or build using a specific number of cores (reduce RAM requirement)
         docker build --build-arg NPROC=1 -t monero .
-     
+
         # either run in foreground
         docker run -it -v /monero/chain:/root/.bitmonero -v /monero/wallet:/wallet -p 18080:18080 monero
 
@@ -293,14 +430,14 @@ invokes cmake commands as needed.
 
 #### On the Raspberry Pi
 
-Tested on a Raspberry Pi Zero with a clean install of minimal Raspbian Stretch (2017-09-07 or later) from https://www.raspberrypi.org/downloads/raspbian/. If you are using Raspian Jessie, [please see note in the following section](#note-for-raspbian-jessie-users). 
+Tested on a Raspberry Pi Zero with a clean install of minimal Raspbian Stretch (2017-09-07 or later) from https://www.raspberrypi.org/downloads/raspbian/. If you are using Raspian Jessie, [please see note in the following section](#note-for-raspbian-jessie-users).
 
 * `apt-get update && apt-get upgrade` to install all of the latest software
 
 * Install the dependencies for Monero from the 'Debian' column in the table above.
 
 * Increase the system swap size:
-```	
+```
 	sudo /etc/init.d/dphys-swapfile stop  
 	sudo nano /etc/dphys-swapfile  
 	CONF_SWAPSIZE=1024  
@@ -332,7 +469,7 @@ If you are using the older Raspbian Jessie image, compiling Monero is a bit more
 
 * As before, `apt-get update && apt-get upgrade` to install all of the latest software, and increase the system swap size
 
-```	
+```
 	sudo /etc/init.d/dphys-swapfile stop  
 	sudo nano /etc/dphys-swapfile  
 	CONF_SWAPSIZE=1024  
@@ -388,7 +525,7 @@ application.
         pacman -S mingw-w64-x86_64-toolchain make mingw-w64-x86_64-cmake mingw-w64-x86_64-boost mingw-w64-x86_64-openssl mingw-w64-x86_64-zeromq mingw-w64-x86_64-libsodium
 
     To build for 32-bit Windows:
- 
+
         pacman -S mingw-w64-i686-toolchain make mingw-w64-i686-cmake mingw-w64-i686-boost mingw-w64-i686-openssl mingw-w64-i686-zeromq mingw-w64-i686-libsodium
 
 * Open the MingW shell via `MinGW-w64-Win64 Shell` shortcut on 64-bit Windows
@@ -449,7 +586,7 @@ mkdir ~/boost
 cd ~/boost
 
 # Fetch boost source
-ftp -o boost_1_64_0.tar.bz2 https://netcologne.dl.sourceforge.net/project/boost/boost/1.64.0/boost_1_64_0.tar.bz2 
+ftp -o boost_1_64_0.tar.bz2 https://netcologne.dl.sourceforge.net/project/boost/boost/1.64.0/boost_1_64_0.tar.bz2
 
 # MUST output: (SHA256) boost_1_64_0.tar.bz2: OK
 echo "7bcc5caace97baa948931d712ea5f37038dbb1c5d89b43ad4def4ed7cb683332 boost_1_64_0.tar.bz2" | sha256 -c
@@ -595,7 +732,7 @@ Run the build.
 Once it stalls, enter the following command:
 
 ```
-gdb /path/to/monerod `pidof monerod` 
+gdb /path/to/monerod `pidof monerod`
 ```
 
 Type `thread apply all bt` within gdb in order to obtain the stack trace
