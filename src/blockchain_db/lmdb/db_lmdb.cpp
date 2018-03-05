@@ -451,7 +451,8 @@ void BlockchainLMDB::do_resize(uint64_t increase_size)
     boost::filesystem::space_info si = boost::filesystem::space(path);
     if(si.available < add_size)
     {
-      MERROR("!! WARNING: Insufficient free space to extend database !!: " << si.available / 1LL << 20L);
+      MERROR("!! WARNING: Insufficient free space to extend database !!: " <<
+          (si.available >> 20L) << " MB available, " << (add_size >> 20L) << " MB needed");
       return;
     }
   }
@@ -472,7 +473,7 @@ void BlockchainLMDB::do_resize(uint64_t increase_size)
   // add 1Gb per resize, instead of doing a percentage increase
   uint64_t new_mapsize = (double) mei.me_mapsize + add_size;
 
-  // If given, use increase_size intead of above way of resizing.
+  // If given, use increase_size instead of above way of resizing.
   // This is currently used for increasing by an estimated size at start of new
   // batch txn.
   if (increase_size > 0)

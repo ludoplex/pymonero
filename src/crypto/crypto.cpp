@@ -107,7 +107,7 @@ namespace crypto {
 
   /* 
    * generate public and secret keys from a random 256-bit integer
-   * TODO: allow specifiying random value (for wallet recovery)
+   * TODO: allow specifying random value (for wallet recovery)
    * 
    */
   secret_key crypto_ops::generate_keys(public_key &pub, secret_key &sec, const secret_key& recovery_key, bool recover) {
@@ -436,7 +436,7 @@ namespace crypto {
     return sc_isnonzero(&c2) == 0;
   }
 
-  static void hash_to_ec(const public_key &key, ge_p3 &res) {
+  void crypto_ops::hash_to_ec(const public_key &key, ge_p3 &res) {
     hash h;
     ge_p2 point;
     ge_p1p1 point2;
