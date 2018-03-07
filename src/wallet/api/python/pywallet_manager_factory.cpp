@@ -3,7 +3,6 @@
 
 struct PyWalletManagerFactory {
 
-
     public:
       static std::shared_ptr<PyWalletManager> getWalletManager() {
 

@@ -78,7 +78,7 @@ target_link_libraries(wallet_api
   PRIVATE
     ${EXTRA_LIBRARIES})
 
-add_library(pywallet_api MODULE python/pywallet_api.cpp)
+pybind11_add_module(pywallet_api MODULE python/pywallet_api.cpp)
 
 target_link_libraries(pywallet_api
       PUBLIC
@@ -88,6 +88,21 @@ target_link_libraries(pywallet_api
 
 set_target_properties(pywallet_api PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}"
                                              SUFFIX "${PYTHON_MODULE_EXTENSION}")
+
+FIND_PACKAGE(PythonInterp)
+FIND_PACKAGE(PythonLibs)
+find_path( PYTHON_SITE_PACKAGES site-packages ${PYTHON_INCLUDE_PATH}/.. )
+
+execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c "import site; print(site.getsitepackages()[0])" OUTPUT_VARIABLE PACKAGE_PATH)
+
+string(STRIP ${PACKAGE_PATH} PACKAGE_PATH)
+message(STATUS "PYTHON PACKAGE_PATH : ${PACKAGE_PATH}")
+
+string(STRIP "${PACKAGE_PATH}" INSTALL_FOLDER)
+message(STATUS "to install at : ${INSTALL_FOLDER}")
+
+INSTALL(TARGETS pywallet_api DESTINATION "${INSTALL_FOLDER}")
+#FILE(COPY ${module_files_to_install} DESTINATION ${PACKAGE_PATH})
 
 set_property(TARGET wallet_api PROPERTY EXCLUDE_FROM_ALL TRUE)
 set_property(TARGET obj_wallet_api PROPERTY EXCLUDE_FROM_ALL TRUE)
