@@ -1,4 +1,8 @@
-# Python pybind11 bindings play testing
+# Goal
+- Add & Maintain Python C++ bindings to the main project tree so that these can be re-used without the need for re-implementations.
+- Export the different project modules so that these can be used in python based projects
+
+# Clone, Build & Run
 
 - clone with recursive mode (to pull the submodule pybind11 too)
 - build monero as normal
@@ -16,7 +20,7 @@ Note : You can verify is wallet was created with :
 Developed on Ubuntu with python 3.5 only (Don't think it works with legacy 2.7)
 
 
-# Python wallet/api Module
+# Python wallet/api Module descriptions
 
 - Defines what gets added to a python's module.
 - Located at monero/src/wallet/api/python/pywallet_api.cpp
