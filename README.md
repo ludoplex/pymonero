@@ -30,32 +30,89 @@ Latest version:
 PYBIND11_MODULE(pywallet_api, m) {
     m.doc() = "pbdoc() ..";
 
-    py::enum_<Monero::Wallet::ConnectionStatus>(m, "ConnectionStatus")
-        .value("ConnectionStatus_Disconnected", Monero::Wallet::ConnectionStatus::ConnectionStatus_Disconnected)
-        .value("ConnectionStatus_Connected", Monero::Wallet::ConnectionStatus::ConnectionStatus_Connected)
-        .value("ConnectionStatus_WrongVersion", Monero::Wallet::ConnectionStatus::ConnectionStatus_WrongVersion)
-        .export_values();
+    // =============================
+    // TRANSACTION HISTORY
+    // =============================
+    py::class_<Monero::TransactionInfoImpl>(m, "TransactionInfo")
+        .def(py::init<>())
+        .def("direction", &Monero::TransactionInfoImpl::direction)
+        .def("isPending", &Monero::TransactionInfoImpl::isPending)
+        .def("isFailed", &Monero::TransactionInfoImpl::isFailed)
+        .def("amount", &Monero::TransactionInfoImpl::amount)
+        .def("fee", &Monero::TransactionInfoImpl::fee)
+        .def("blockHeight", &Monero::TransactionInfoImpl::blockHeight)
+        .def("subaddrIndex", &Monero::TransactionInfoImpl::subaddrIndex)
+        .def("subaddrAccount", &Monero::TransactionInfoImpl::subaddrAccount)
+        .def("label", &Monero::TransactionInfoImpl::label)
+        .def("confirmations", &Monero::TransactionInfoImpl::confirmations)
+        .def("unlockTime", &Monero::TransactionInfoImpl::unlockTime)
+        .def("hash", &Monero::TransactionInfoImpl::hash)
+        .def("timestamp", &Monero::TransactionInfoImpl::timestamp)
+        .def("paymentId", &Monero::TransactionInfoImpl::paymentId)
+        .def("transfers", &Monero::TransactionInfoImpl::transfers);
 
-    py::enum_<Monero::Wallet::Status>(m, "Status")
-        .value("Status_Ok", Monero::Wallet::Status::Status_Ok)
-        .value("Status_Error", Monero::Wallet::Status::Status_Error)
-        .value("Status_Critical", Monero::Wallet::Status::Status_Critical)
-        .export_values();
-
-    py::class_<Monero::UnsignedTransaction>(m, "UnsignedTransaction")
-        .def("status", &Monero::UnsignedTransaction::status)
-        .def("errorString", &Monero::UnsignedTransaction::errorString)
-        .def("amount", &Monero::UnsignedTransaction::amount)
-        .def("fee", &Monero::UnsignedTransaction::fee)
-        .def("mixin", &Monero::UnsignedTransaction::mixin)
-        .def("confirmationMessage", &Monero::UnsignedTransaction::confirmationMessage)
-        .def("paymentId", &Monero::UnsignedTransaction::paymentId)
-        .def("recipientAddress", &Monero::UnsignedTransaction::recipientAddress)
-        .def("minMixinCount", &Monero::UnsignedTransaction::minMixinCount)
-        .def("txCount", &Monero::UnsignedTransaction::txCount)
-        .def("sign", &Monero::UnsignedTransaction::sign)
+    py::class_<PyTransactionHistory>(m, "TransactionHistory")
+        .def(py::init<>())
+        .def("count", &PyTransactionHistory::count)
+        .def("transaction", &PyTransactionHistory::transaction)
+        .def("transactionById", &PyTransactionHistory::transactionById)
+        .def("getAll", &PyTransactionHistory::getAll)
+        .def("refresh", &PyTransactionHistory::refresh)
         ;
 
+    // =============================
+    // PENDING TRANSACTION
+    // =============================
+    py::class_<Monero::PendingTransactionImpl>(m, "PendingTransaction")
+        //.def(py::init<>())
+        .def("status", &Monero::PendingTransactionImpl::status)
+        .def("errorString", &Monero::PendingTransactionImpl::errorString)
+        .def("commit", &Monero::PendingTransactionImpl::commit)
+        .def("amount", &Monero::PendingTransactionImpl::amount)
+        .def("dust", &Monero::PendingTransactionImpl::dust)
+        .def("fee", &Monero::PendingTransactionImpl::fee)
+        .def("txid", &Monero::PendingTransactionImpl::txid)
+        .def("txCount", &Monero::PendingTransactionImpl::txCount)
+        .def("subaddrAccount", &Monero::PendingTransactionImpl::subaddrAccount)
+        .def("subaddrIndices", &Monero::PendingTransactionImpl::subaddrIndices);
+
+    py::enum_<Monero::PendingTransaction::Status>(m, "Status")
+        .value("Status_Ok", Monero::PendingTransaction::Status::Status_Ok)
+        .value("Status_Error", Monero::PendingTransaction::Status::Status_Error)
+        .value("Status_Critical", Monero::PendingTransaction::Status::Status_Critical)
+        .export_values();
+
+    py::enum_<Monero::PendingTransaction::Priority>(m, "Priority")
+        .value("Priority_Default", Monero::PendingTransaction::Priority::Priority_Default)
+        .value("Priority_Low", Monero::PendingTransaction::Priority::Priority_Low)
+        .value("Priority_Medium", Monero::PendingTransaction::Priority::Priority_Medium)
+        .value("Priority_High", Monero::PendingTransaction::Priority::Priority_High)
+        .value("Priority_Last", Monero::PendingTransaction::Priority::Priority_Last)
+        .export_values();
+    // ===============================
+
+    // =============================
+    // UNSIGNED TRANSACTION
+    // =============================
+    py::class_<Monero::UnsignedTransactionImpl>(m, "UnsignedTransaction")
+        //.def(py::init<>())
+        .def("status", &Monero::UnsignedTransactionImpl::status)
+        .def("errorString", &Monero::UnsignedTransactionImpl::errorString)
+        .def("amount", &Monero::UnsignedTransactionImpl::amount)
+        .def("fee", &Monero::UnsignedTransactionImpl::fee)
+        .def("mixin", &Monero::UnsignedTransactionImpl::mixin)
+        .def("confirmationMessage", &Monero::UnsignedTransactionImpl::confirmationMessage)
+        .def("paymentId", &Monero::UnsignedTransactionImpl::paymentId)
+        .def("recipientAddress", &Monero::UnsignedTransactionImpl::recipientAddress)
+        .def("minMixinCount", &Monero::UnsignedTransactionImpl::minMixinCount)
+        .def("txCount", &Monero::UnsignedTransactionImpl::txCount)
+        .def("sign", &Monero::UnsignedTransactionImpl::sign)
+        ;
+    // =============================
+
+    // =============================
+    // WALLET
+    // =============================
     py::class_<PyWallet>(m, "Wallet")
         .def(py::init<>())
         .def_property("m_wallet", &PyWallet::getWallet, &PyWallet::setWallet)
@@ -146,8 +203,27 @@ PYBIND11_MODULE(pywallet_api, m) {
         .def("lightWalletLogin", &PyWallet::lightWalletLogin)
         .def("lightWalletImportWalletRequest", &PyWallet::lightWalletImportWalletRequest)
         .def("connected", &PyWallet::connected)
+        .def("createTransaction", &PyWallet::createTransaction)
+        .def("createSweepUnmixableTransaction", &PyWallet::createSweepUnmixableTransaction)
+        .def("loadUnsignedTx", &PyWallet::loadUnsignedTx)
         ;
 
+        py::enum_<Monero::Wallet::ConnectionStatus>(m, "ConnectionStatus")
+            .value("ConnectionStatus_Disconnected", Monero::Wallet::ConnectionStatus::ConnectionStatus_Disconnected)
+            .value("ConnectionStatus_Connected", Monero::Wallet::ConnectionStatus::ConnectionStatus_Connected)
+            .value("ConnectionStatus_WrongVersion", Monero::Wallet::ConnectionStatus::ConnectionStatus_WrongVersion)
+            .export_values();
+
+        py::enum_<Monero::Wallet::Status>(m, "Status")
+            .value("Status_Ok", Monero::Wallet::Status::Status_Ok)
+            .value("Status_Error", Monero::Wallet::Status::Status_Error)
+            .value("Status_Critical", Monero::Wallet::Status::Status_Critical)
+            .export_values();
+    // =============================
+
+    // =============================
+    // WALLET MANAGER
+    // =============================
     py::class_<PyWalletManager>(m, "WalletManager")
         .def(py::init<>())
         .def("walletExists", &PyWalletManager::walletExists)
