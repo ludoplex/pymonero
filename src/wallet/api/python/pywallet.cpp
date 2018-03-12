@@ -1,4 +1,7 @@
 #include "../wallet2_api.h"
+#include "pytransaction_history.cpp"
+
+using namespace Monero;
 
 class PyWallet {
     public:
@@ -196,7 +199,6 @@ class PyWallet {
         Monero::Wallet::ConnectionStatus connected() {
           return m_wallet->connected();
         }
-        //##
 
         void setTrustedDaemon(bool arg) {
           m_wallet->setTrustedDaemon(arg);
@@ -422,29 +424,42 @@ class PyWallet {
          *                          after object returned
          */
 
-       //  virtual PendingTransaction * createTransaction(const std::string &dst_addr, const std::string &payment_id,
-       //                                                 optional<uint64_t> amount, uint32_t mixin_count,
-       //                                                 PendingTransaction::Priority = PendingTransaction::Priority_Low,
-       //                                                 uint32_t subaddr_account = 0,
-       //                                                 std::set<uint32_t> subaddr_indices = {}) = 0;
-       //
-       //  /*!
-       //   * \brief createSweepUnmixableTransaction creates transaction with unmixable outputs.
-       //   * \return                  PendingTransaction object. caller is responsible to check PendingTransaction::status()
-       //   *                          after object returned
-       //   */
-       //
-       //  virtual PendingTransaction * createSweepUnmixableTransaction() = 0;
-       //
-       // /*!
-       //  * \brief loadUnsignedTx  - creates transaction from unsigned tx file
-       //  * \return                - UnsignedTransaction object. caller is responsible to check UnsignedTransaction::status()
-       //  *                          after object returned
-       //  */
-       //  virtual UnsignedTransaction * loadUnsignedTx(const std::string &unsigned_filename) = 0;
+        std::shared_ptr<PendingTransaction> createTransaction(const std::string &dst_addr, const std::string &payment_id,
+            optional<uint64_t> amount,
+            uint32_t mixin_count,
+            PendingTransaction::Priority priority,
+            uint32_t subaddr_account = 0,
+            std::set<uint32_t> subaddr_indices = {}) {
+                PendingTransaction * raw_pending_tx = m_wallet->createTransaction(dst_addr, payment_id, amount, mixin_count, priority, subaddr_account, subaddr_indices);
+                std::shared_ptr<PendingTransaction> shared_native_pending_tx(raw_pending_tx);
 
+                return shared_native_pending_tx;
+            }
 
-       /// ##
+        /*!
+         * \brief createSweepUnmixableTransaction creates transaction with unmixable outputs.
+         * \return                  PendingTransaction object. caller is responsible to check PendingTransaction::status()
+         *                          after object returned
+         */
+
+        std::shared_ptr<PendingTransaction> createSweepUnmixableTransaction() {
+            PendingTransaction * raw_pending_tx = m_wallet->createSweepUnmixableTransaction();
+            std::shared_ptr<PendingTransaction> shared_native_pending_tx(raw_pending_tx);
+
+            return shared_native_pending_tx;
+        }
+
+       /*!
+        * \brief loadUnsignedTx  - creates transaction from unsigned tx file
+        * \return                - UnsignedTransaction object. caller is responsible to check UnsignedTransaction::status()
+        *                          after object returned
+        */
+        std::shared_ptr<UnsignedTransaction> loadUnsignedTx(const std::string &unsigned_filename) {
+            UnsignedTransaction * raw_unsigned_tx = m_wallet->loadUnsignedTx(unsigned_filename);
+            std::shared_ptr<UnsignedTransaction> shared_native_unsigned_tx(raw_unsigned_tx);
+
+            return shared_native_unsigned_tx;
+        }
 
        /*!
         * \brief submitTransaction - submits transaction in signed tx file
@@ -459,13 +474,9 @@ class PyWallet {
          * \brief disposeTransaction - destroys transaction object
          * \param t -  pointer to the "PendingTransaction" object. Pointer is not valid after function returned;
          */
-        //virtual void disposeTransaction(PendingTransaction * t) = 0;
-
-
-
-//##
-
-
+        void disposeTransaction(std::shared_ptr<PendingTransaction> t) {
+            m_wallet->disposeTransaction(t.get());
+        }
 
        /*!
         * \brief exportKeyImages - exports key images to file
@@ -487,7 +498,16 @@ class PyWallet {
 
 // ##
 
-        // virtual TransactionHistory * history() = 0;
+        std::shared_ptr<PyTransactionHistory> history() {
+            TransactionHistory * raw_tx_history = m_wallet->history();
+            std::shared_ptr<TransactionHistory> shared_tx_history(raw_tx_history);
+
+            std::shared_ptr<PyTransactionHistory> new_py_tx_history(new PyTransactionHistory());
+            new_py_tx_history->setSharedTransactionHistory(shared_tx_history);
+
+            return new_py_tx_history;
+        }
+
         // virtual AddressBook * addressBook() = 0;
         // virtual def * subaddress() = 0;
         // virtual SubaddressAccount * subaddressAccount() = 0;
