@@ -79,11 +79,11 @@ PYBIND11_MODULE(pywallet_api, m) {
         .def("subaddrAccount", &Monero::PendingTransactionImpl::subaddrAccount)
         .def("subaddrIndices", &Monero::PendingTransactionImpl::subaddrIndices);
 
-    py::enum_<Monero::PendingTransaction::Status>(m, "Status")
-        .value("Status_Ok", Monero::PendingTransaction::Status::Status_Ok)
-        .value("Status_Error", Monero::PendingTransaction::Status::Status_Error)
-        .value("Status_Critical", Monero::PendingTransaction::Status::Status_Critical)
-        .export_values();
+    // py::enum_<Monero::PendingTransaction::Status>(m, "Status")
+    //     .value("Status_Ok", Monero::PendingTransaction::Status::Status_Ok)
+    //     .value("Status_Error", Monero::PendingTransaction::Status::Status_Error)
+    //     .value("Status_Critical", Monero::PendingTransaction::Status::Status_Critical)
+    //     .export_values();
 
     py::enum_<Monero::PendingTransaction::Priority>(m, "Priority")
         .value("Priority_Default", Monero::PendingTransaction::Priority::Priority_Default)
