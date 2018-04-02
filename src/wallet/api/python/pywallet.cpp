@@ -315,8 +315,8 @@ class PyWallet {
 
         //##
 
-        static void debug(const std::string &str) {
-           Monero::Wallet::debug(str);
+        static void debug(const std::string &category, const std::string &str) {
+           Monero::Wallet::debug(category, str);
         }
 
        /**
