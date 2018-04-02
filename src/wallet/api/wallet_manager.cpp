@@ -37,7 +37,6 @@
 #include "common/updates.h"
 #include "version.h"
 #include "net/http_client.h"
-#include "deviuce/device.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
 

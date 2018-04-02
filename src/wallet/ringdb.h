@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2018, The Monero Project
+// Copyright (c) 2018, The Monero Project
 // 
 // All rights reserved.
 // 
@@ -25,75 +25,41 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
-// Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
 #pragma once
 
-#include "cryptonote_protocol/cryptonote_protocol_handler.h"
-#include "p2p/net_node.h"
-#include "daemon/protocol.h"
+#include <string>
+#include <vector>
+#include <lmdb.h>
+#include "wipeable_string.h"
+#include "crypto/crypto.h"
+#include "cryptonote_basic/cryptonote_basic.h"
 
-#undef MONERO_DEFAULT_LOG_CATEGORY
-#define MONERO_DEFAULT_LOG_CATEGORY "daemon"
-
-namespace daemonize
+namespace tools
 {
-
-class t_p2p final
-{
-private:
-  typedef cryptonote::t_cryptonote_protocol_handler<cryptonote::core> t_protocol_raw;
-  typedef nodetool::node_server<t_protocol_raw> t_node_server;
-public:
-  static void init_options(boost::program_options::options_description & option_spec)
+  class ringdb
   {
-    t_node_server::init_options(option_spec);
-  }
-private:
-  t_node_server m_server;
-public:
-  t_p2p(
-      boost::program_options::variables_map const & vm
-    , t_protocol & protocol
-    )
-    : m_server{protocol.get()}
-  {
-    //initialize objects
-    MGINFO("Initializing p2p server...");
-    if (!m_server.init(vm))
-    {
-      throw std::runtime_error("Failed to initialize p2p server.");
-    }
-    MGINFO("p2p server initialized OK");
-  }
+  public:
+    ringdb(std::string filename, const std::string &genesis);
+    ~ringdb();
 
-  t_node_server & get()
-  {
-    return m_server;
-  }
+    bool add_rings(const crypto::chacha_key &chacha_key, const cryptonote::transaction_prefix &tx);
+    bool remove_rings(const crypto::chacha_key &chacha_key, const cryptonote::transaction_prefix &tx);
+    bool get_ring(const crypto::chacha_key &chacha_key, const crypto::key_image &key_image, std::vector<uint64_t> &outs);
+    bool set_ring(const crypto::chacha_key &chacha_key, const crypto::key_image &key_image, const std::vector<uint64_t> &outs, bool relative);
 
-  void run()
-  {
-    MGINFO("Starting p2p net loop...");
-    m_server.run();
-    MGINFO("p2p net loop stopped");
-  }
+    bool blackball(const crypto::public_key &output);
+    bool unblackball(const crypto::public_key &output);
+    bool blackballed(const crypto::public_key &output);
+    bool clear_blackballs();
 
-  void stop()
-  {
-    m_server.send_stop_signal();
-  }
+  private:
+    bool blackball_worker(const crypto::public_key &output, int op);
 
-  ~t_p2p()
-  {
-    MGINFO("Deinitializing p2p...");
-    try {
-      m_server.deinit();
-    } catch (...) {
-      MERROR("Failed to deinitialize p2p...");
-    }
-  }
-};
-
+  private:
+    std::string filename;
+    MDB_env *env;
+    MDB_dbi dbi_rings;
+    MDB_dbi dbi_blackballs;
+  };
 }

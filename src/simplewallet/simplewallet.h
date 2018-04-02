@@ -133,6 +133,10 @@ namespace cryptonote
     bool set_confirm_export_overwrite(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_refresh_from_block_height(const std::vector<std::string> &args = std::vector<std::string>());
     bool set_auto_low_priority(const std::vector<std::string> &args = std::vector<std::string>());
+    bool set_segregate_pre_fork_outputs(const std::vector<std::string> &args = std::vector<std::string>());
+    bool set_key_reuse_mitigation2(const std::vector<std::string> &args = std::vector<std::string>());
+    bool set_subaddress_lookahead(const std::vector<std::string> &args = std::vector<std::string>());
+    bool set_segregation_height(const std::vector<std::string> &args = std::vector<std::string>());
     bool help(const std::vector<std::string> &args = std::vector<std::string>());
     bool start_mining(const std::vector<std::string> &args);
     bool stop_mining(const std::vector<std::string> &args);
@@ -208,6 +212,12 @@ namespace cryptonote
     bool sign_multisig(const std::vector<std::string>& args);
     bool submit_multisig(const std::vector<std::string>& args);
     bool export_raw_multisig(const std::vector<std::string>& args);
+    bool print_ring(const std::vector<std::string>& args);
+    bool set_ring(const std::vector<std::string>& args);
+    bool save_known_rings(const std::vector<std::string>& args);
+    bool blackball(const std::vector<std::string>& args);
+    bool unblackball(const std::vector<std::string>& args);
+    bool blackballed(const std::vector<std::string>& args);
 
     uint64_t get_daemon_blockchain_height(std::string& err);
     bool try_connect_to_daemon(bool silent = false, uint32_t* version = nullptr);
@@ -312,6 +322,7 @@ namespace cryptonote
     std::string m_generate_from_json;
     std::string m_mnemonic_language;
     std::string m_import_path;
+    std::string m_subaddress_lookahead;
 
     std::string m_electrum_seed;  // electrum-style seed parameter
 
@@ -324,11 +335,11 @@ namespace cryptonote
     bool m_restoring;           // are we restoring, by whatever method?
     uint64_t m_restore_height;  // optional
     bool m_do_not_relay;
+    bool m_use_english_language_names;
 
     epee::console_handlers_binder m_cmd_binder;
 
     std::unique_ptr<tools::wallet2> m_wallet;
-    epee::net_utils::http::http_simple_client m_http_client;
     refresh_progress_reporter_t m_refresh_progress_reporter;
 
     std::atomic<bool> m_idle_run;
