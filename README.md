@@ -4,7 +4,8 @@
 
 # Clone, Build & Run
 
-- clone with recursive mode (to pull the submodule pybind11 too)
+- clone with recursive mode (``` git clone --recursive https://github.com/ehanoc/pymonero.git ```)
+- If not, you might need to ``` git submodule update --init ```. And make sure you pull the submodules (pybind11 & external/unbound)
 - build monero as normal
 - then as an Example : ```$ cd build/release/src/wallet/api/```
 - ``` $ python   ```
