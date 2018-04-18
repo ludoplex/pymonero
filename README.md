@@ -2,6 +2,10 @@
 - Add & Maintain Python C++ bindings to the main project tree so that these can be re-used without the need for re-implementations.
 - Export the different project modules so that these can be used in python based projects
 
+# Dependancies
+- Ensure you have python3-dev installed
+- ``` sudo apt-get install python3-dev ```
+
 # Clone, Build & Run
 
 - clone (``` git clone https://github.com/ehanoc/pymonero.git ```)
