@@ -2,7 +2,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 #include <pybind11/pybind11.h>
-
+#include <pybind11/functional.h>
 
 #include "pywallet.cpp"
 #include "pywallet_manager.cpp"
@@ -119,6 +119,7 @@ PYBIND11_MODULE(pywallet_api, m) {
     py::class_<PyWallet>(m, "Wallet")
         .def(py::init<>())
         .def_property("m_wallet", &PyWallet::getWallet, &PyWallet::setWallet)
+        .def("setListeners", &PyWallet::setListeners)
         .def("seed", &PyWallet::seed)
         .def("getSeedLanguage", &PyWallet::getSeedLanguage)
         .def("setSeedLanguage", &PyWallet::setSeedLanguage)

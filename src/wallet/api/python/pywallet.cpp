@@ -1,5 +1,6 @@
 #include "../wallet2_api.h"
 #include "pytransaction_history.cpp"
+#include "pywallet_listener.cpp"
 
 using namespace Monero;
 
@@ -512,7 +513,17 @@ class PyWallet {
         // virtual def * subaddress() = 0;
         // virtual SubaddressAccount * subaddressAccount() = 0;
         // virtual void setListener(WalletListener *) = 0;
-
+        void setListeners(const std::function<void(const std::string &txId, uint64_t amount)> &moneySpent,
+                    const std::function<void(const std::string &txId, uint64_t amount)> &moneyReceived,
+                    const std::function<void(const std::string &txId, uint64_t amount)> &unconfirmedMoneyReceived,
+                    const std::function<void(uint64_t height)> &newBlock,
+                    const std::function<void()> &updated,
+                    const std::function<void()> &refreshed
+                    ) {
+                PyWalletListener * pwListener = new PyWalletListener();
+                pwListener->add_callbacks(moneySpent, moneyReceived, unconfirmedMoneyReceived, newBlock, updated, refreshed);
+                m_wallet->setListener(pwListener);
+        }
 
         /*!
          * \brief defaultMixin - returns number of mixins used in transactions
