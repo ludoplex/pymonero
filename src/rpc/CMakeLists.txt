@@ -139,3 +139,29 @@ target_link_libraries(daemon_rpc_server
     ${EXTRA_LIBRARIES})
 target_include_directories(daemon_rpc_server PUBLIC ${ZMQ_INCLUDE_PATH})
 target_include_directories(obj_daemon_rpc_server PUBLIC ${ZMQ_INCLUDE_PATH})
+
+pybind11_add_module(pyrpc_api MODULE python/pyrpc_api.cpp)
+
+target_link_libraries(pyrpc_api
+      PUBLIC
+        daemon_rpc_server
+      PRIVATE
+        pybind11::module)
+
+set_target_properties(pyrpc_api PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}"
+                                             SUFFIX "${PYTHON_MODULE_EXTENSION}")
+
+FIND_PACKAGE(PythonInterp 3)
+FIND_PACKAGE(PythonLibs 3)
+find_path( PYTHON_SITE_PACKAGES site-packages ${PYTHON_INCLUDE_PATH}/.. )
+
+execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c "import site; print(site.getsitepackages()[0])" OUTPUT_VARIABLE PACKAGE_PATH)
+
+string(STRIP ${PACKAGE_PATH} PACKAGE_PATH)
+message(STATUS "PYTHON PACKAGE_PATH : ${PACKAGE_PATH}")
+
+string(STRIP "${PACKAGE_PATH}" INSTALL_FOLDER)
+message(STATUS "to install at : ${INSTALL_FOLDER}")
+
+INSTALL(TARGETS pyrpc_api DESTINATION "${INSTALL_FOLDER}")
+#FILE(COPY ${module_files_to_install} DESTINATION ${PACKAGE_PATH})
