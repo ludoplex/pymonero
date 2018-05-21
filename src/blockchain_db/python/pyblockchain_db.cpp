@@ -4,22 +4,19 @@
 
 using namespace cryptonote;
 
-class PyBlockchainDb : BlockchainLMDB {
+class PyBlockchainDb : public BlockchainLMDB {
 public:
     PyBlockchainDb() {
-        BlockchainLMDB * db = new BlockchainLMDB();
-        std::shared_ptr<BlockchainLMDB> shared_native_blockchain_db (db);
-        m_db = shared_native_blockchain_db;
+        // BlockchainLMDB * db = new BlockchainLMDB();
+        // std::shared_ptr<BlockchainLMDB> shared_native_blockchain_db (db);
+        // m_db = shared_native_blockchain_db;
     }
 
-    uint64_t height() {
-        return m_db->height();
-    }
-
-    void sync() {
-        m_db->sync();
+    uint64_t get_block_height(const std::string hash) {
+        crypto::hash h = crypto::cn_fast_hash(hash.data(), hash.length());
+        return BlockchainLMDB::get_block_height(h);
     }
 
 private:
-    std::shared_ptr<BlockchainLMDB> m_db;
+    //std::shared_ptr<BlockchainLMDB> m_db;
 };
