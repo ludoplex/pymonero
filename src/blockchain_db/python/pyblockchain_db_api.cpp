@@ -41,6 +41,14 @@ PYBIND11_MODULE(pyblockchain_db_api, m) {
         })
     ;
 
+    py::class_<cryptonote::block_header>(m, "BlockHeader")
+        .def_readonly("prev_id", &cryptonote::block_header::prev_id)
+    ;
+
+    py::class_<cryptonote::block>(m, "Block")
+        .def("is_hash_valid", &cryptonote::block::is_hash_valid)
+    ;
+
     py::class_<PyBlockchainDb>(m, "PyBlockchainDb")
         .def(py::init<>())
         .def("height", &PyBlockchainDb::height)
@@ -55,6 +63,8 @@ PYBIND11_MODULE(pyblockchain_db_api, m) {
         .def("get_block_height", &PyBlockchainDb::get_block_height)
         .def("get_block_header", &PyBlockchainDb::get_block_header)
         .def("top_block_hash", &PyBlockchainDb::top_block_hash)
+        .def("get_top_block", &PyBlockchainDb::get_top_block)
+        .def("get_block_hash_from_height", &PyBlockchainDb::get_block_hash_from_height)
 
         // TODO:: Add the rest of the mappings
 
