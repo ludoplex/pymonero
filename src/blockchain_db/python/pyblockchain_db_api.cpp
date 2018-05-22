@@ -4,8 +4,9 @@
 #include <pybind11/functional.h>
 #include <pybind11/complex.h>
 #include <pybind11/chrono.h>
-
-#include <pybind11/stl.h>
+#include "../../cryptonote_basic/cryptonote_format_utils.h"
+//
+// #include <pybind11/stl.h>
 // for opaque containers
 // link {http://pybind11.readthedocs.io/en/stable/advanced/cast/stl.html}
 #include <pybind11/stl_bind.h>
@@ -37,6 +38,7 @@ PYBIND11_MODULE(pyblockchain_db_api, m) {
         .def("data", [](const crypto::hash &h) {
             // We can change returned format as we see fit
             return short_hash_str(h);
+            //return py::bytes(h.data);
         })
     ;
 

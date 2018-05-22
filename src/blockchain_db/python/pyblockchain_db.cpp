@@ -1,4 +1,4 @@
-#include "../lmdb/db_lmdb.cpp"
+#include "../lmdb/db_lmdb.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 
