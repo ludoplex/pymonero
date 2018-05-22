@@ -33,20 +33,32 @@ PYBIND11_MODULE(pyblockchain_db_api, m) {
         ;
 
     py::class_<crypto::hash>(m, "CryptoHash")
-        // .def(py::init<>())
+        .def(py::init<>())
         .def("data", [](const crypto::hash &h) {
-            // char * d = h.data;
-            // py::str py_s = PyUnicode_DecodeLatin1(h.data, sizeof(h), nullptr);
-            return py::bytes(h.data);
+            // We can change returned format as we see fit
+            return short_hash_str(h);
         })
+    ;
+
+    py::class_<cryptonote::transaction>(m, "Transaction")
+        // .def(py::init<>())
+        // .def(py::init<cryptonote::transaction &>())
+        .def_readonly("hash", &cryptonote::transaction::hash)
+        .def_readonly("blob_size", &cryptonote::transaction::blob_size)
     ;
 
     py::class_<cryptonote::block_header>(m, "BlockHeader")
         .def_readonly("prev_id", &cryptonote::block_header::prev_id)
+        .def_readonly("major_version", &cryptonote::block_header::major_version)
+        .def_readonly("minor_version", &cryptonote::block_header::minor_version)
+        .def_readonly("timestamp", &cryptonote::block_header::timestamp)
+        .def_readonly("nonce", &cryptonote::block_header::nonce)
     ;
 
     py::class_<cryptonote::block>(m, "Block")
         .def("is_hash_valid", &cryptonote::block::is_hash_valid)
+        .def_readonly("miner_tx", &cryptonote::block::miner_tx)
+        .def_readonly("tx_hashes", &cryptonote::block::tx_hashes)
     ;
 
     py::class_<PyBlockchainDb>(m, "PyBlockchainDb")
@@ -65,6 +77,7 @@ PYBIND11_MODULE(pyblockchain_db_api, m) {
         .def("top_block_hash", &PyBlockchainDb::top_block_hash)
         .def("get_top_block", &PyBlockchainDb::get_top_block)
         .def("get_block_hash_from_height", &PyBlockchainDb::get_block_hash_from_height)
+        .def("get_blocks_range", &PyBlockchainDb::get_blocks_range)
 
         // TODO:: Add the rest of the mappings
 
