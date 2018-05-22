@@ -32,6 +32,15 @@ PYBIND11_MODULE(pyblockchain_db_api, m) {
         }, py::keep_alive<0, 1>()) /* Keep vector alive while iterator is used */
         ;
 
+    py::class_<crypto::hash>(m, "CryptoHash")
+        // .def(py::init<>())
+        .def("data", [](const crypto::hash &h) {
+            // char * d = h.data;
+            // py::str py_s = PyUnicode_DecodeLatin1(h.data, sizeof(h), nullptr);
+            return py::bytes(h.data);
+        })
+    ;
+
     py::class_<PyBlockchainDb>(m, "PyBlockchainDb")
         .def(py::init<>())
         .def("height", &PyBlockchainDb::height)
@@ -45,13 +54,10 @@ PYBIND11_MODULE(pyblockchain_db_api, m) {
         .def("block_exists", &PyBlockchainDb::block_exists)
         .def("get_block_height", &PyBlockchainDb::get_block_height)
         .def("get_block_header", &PyBlockchainDb::get_block_header)
-        // .def("remove_tx_outputs", &PyBlockchainDb::remove_tx_outputs)
-        // .def("remove_output", &PyBlockchainDb::remove_output)
-        // .def("add_spent_key", &PyBlockchainDb::add_spent_key)
-        // .def("remove_spent_key", &PyBlockchainDb::remove_spent_key)
-        // .def("output_to_blob", &PyBlockchainDb::output_to_blob)
-        // .def("output_from_blob", &PyBlockchainDb::output_from_blob)
-        // .def("check_open", &PyBlockchainDb::check_open)
+        .def("top_block_hash", &PyBlockchainDb::top_block_hash)
+
+        // TODO:: Add the rest of the mappings
+
         .def("open", &PyBlockchainDb::open)
         .def("close", &PyBlockchainDb::close)
         ;

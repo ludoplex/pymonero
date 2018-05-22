@@ -276,6 +276,70 @@ PYBIND11_MODULE(pywallet_api, m) {
 
 ```
 
+# Blockchain DB Mappings
+
+- then as an Example : ```$ cd build/release/src/blockchain_db```
+- ``` $ python3   ```
+- ``` >>> import pyblockchain_db_api   ```
+- ``` >>> db = pyblockchain_db_api.PyBlockchainDb()   ```
+- ``` >>> db.open("/your/path/to/.bitmonero/lmdb", 0)   ``` //opened
+- ``` >>> h = db.top_block_hash()   ```
+- ``` >>> print(h.data())  ```
+
+## Blockchain DB python module
+```
+PYBIND11_MODULE(pyblockchain_db_api, m) {
+    m.doc() = "pbdoc() ..";
+
+    // For returning values of vector<string>
+    py::class_<std::vector<std::string>>(m, "VectorString")
+        .def(py::init<>())
+        .def("clear", &std::vector<std::string>::clear)
+        .def("pop_back", &std::vector<std::string>::pop_back)
+        .def("__len__", [](const std::vector<std::string> &v) { return v.size(); })
+        .def("__iter__", [](std::vector<std::string> &v) {
+            return py::make_iterator(v.begin(), v.end());
+        }, py::keep_alive<0, 1>()) /* Keep vector alive while iterator is used */
+        ;
+
+    py::class_<crypto::hash>(m, "CryptoHash")
+        // .def(py::init<>())
+        .def_readonly("data", &crypto::hash::data)
+    ;
+
+    py::class_<PyBlockchainDb>(m, "PyBlockchainDb")
+        .def(py::init<>())
+        .def("height", &PyBlockchainDb::height)
+        .def("sync", &PyBlockchainDb::sync)
+        .def("get_filenames", &PyBlockchainDb::get_filenames)
+        .def("safesyncmode", &PyBlockchainDb::safesyncmode)
+        .def("reset", &PyBlockchainDb::reset)
+        .def("get_db_name", &PyBlockchainDb::get_db_name)
+        .def("lock", &PyBlockchainDb::lock)
+        .def("unlock", &PyBlockchainDb::unlock)
+        .def("block_exists", &PyBlockchainDb::block_exists)
+        .def("get_block_height", &PyBlockchainDb::get_block_height)
+        .def("get_block_header", &PyBlockchainDb::get_block_header)
+        .def("top_block_hash", &PyBlockchainDb::top_block_hash)
+
+        // TODO:: Add the rest of the mappings
+
+        .def("open", &PyBlockchainDb::open)
+        .def("close", &PyBlockchainDb::close)
+        ;
+
+    // py::bind_vector<std::vector<std::string>>(m, "VectorString");
+
+    #ifdef VERSION_INFO
+        m.attr("__version__") = VERSION_INFO;
+    #else
+        m.attr("__version__") = "dev";
+    #endif
+}
+
+```
+
+
 ---------------------------------------------------------------------------------------------------------------------
 
 
@@ -375,7 +439,7 @@ Monero uses a fixed-schedule mandatory software upgrade (hard fork) mechanism to
 Dates are provided in the format YYYY-MM-DD.
 =======
 Monero uses a fixed-schedule software upgrade (hard fork) mechanism to implement new features. This means that users of Monero (end users and service providers) should run current versions and upgrade their software on a regular schedule. Software upgrades occur during the months of April and October. The required software for these upgrades will be available prior to the scheduled date. Please check the repository prior to this date for the proper Monero software version. Below is the historical schedule and the projected schedule for the next upgrade.
-Dates are provided in the format YYYY-MM-DD. 
+Dates are provided in the format YYYY-MM-DD.
 >>>>>>> 8fdf645397654956b74d6ddcd79f94bfa7bf2c5f
 
 
@@ -396,7 +460,7 @@ X's indicate that these details have not been determined as of commit date.
 <<<<<<< HEAD
 Approximately three months prior to a scheduled mandatory software upgrade, a branch from Master will be created with the new release version tag. Pull requests that address bugs should then be made to both Master and the new release branch. Pull requests that require extensive review and testing (generally, optimizations and new features) should *not* be made to the release branch.
 =======
-Approximately three months prior to a scheduled software upgrade, a branch from Master will be created with the new release version tag. Pull requests that address bugs should then be made to both Master and the new release branch. Pull requests that require extensive review and testing (generally, optimizations and new features) should *not* be made to the release branch. 
+Approximately three months prior to a scheduled software upgrade, a branch from Master will be created with the new release version tag. Pull requests that address bugs should then be made to both Master and the new release branch. Pull requests that require extensive review and testing (generally, optimizations and new features) should *not* be made to the release branch.
 >>>>>>> 8fdf645397654956b74d6ddcd79f94bfa7bf2c5f
 
 ## Installing Monero from a package
