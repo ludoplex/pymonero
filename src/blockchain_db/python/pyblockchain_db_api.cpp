@@ -80,6 +80,7 @@ PYBIND11_MODULE(pyblockchain_db_api, m) {
         .def("get_top_block", &PyBlockchainDb::get_top_block)
         .def("get_block_hash_from_height", &PyBlockchainDb::get_block_hash_from_height)
         .def("get_blocks_range", &PyBlockchainDb::get_blocks_range)
+        .def("is_open", &PyBlockchainDb::is_open)
 
         // TODO:: Add the rest of the mappings
 

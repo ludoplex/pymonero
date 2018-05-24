@@ -96,3 +96,8 @@ target_link_libraries(blockchain_db
 
     INSTALL(TARGETS pyblockchain_db_api DESTINATION "${INSTALL_FOLDER}")
     #FILE(COPY ${module_files_to_install} DESTINATION ${PACKAGE_PATH})
+
+    #COPY PYTHON TESTS & RUN
+    enable_testing()
+    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/python/tests/test_pyblockchain_db_api.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    add_test(NAME test_pyblockchain_db_api COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/test_pyblockchain_db_api.py)
