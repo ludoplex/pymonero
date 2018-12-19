@@ -28,17 +28,15 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
-#include "include_base_utils.h"
-
-using namespace epee;
-
 #include "checkpoints.h"
 
 #include "common/dns_utils.h"
-#include "include_base_utils.h"
 #include "string_tools.h"
 #include "storages/portable_storage_template_helper.h" // epee json include
 #include "serialization/keyvalue_serialization.h"
+#include <vector>
+
+using namespace epee;
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "checkpoints"
@@ -165,6 +163,7 @@ namespace cryptonote
     {
       ADD_CHECKPOINT(0,     "48ca7cd3c8de5b6a4d53d2861fbdaedca141553559f9be9520068053cda8430b");
       ADD_CHECKPOINT(1000000, "46b690b710a07ea051bc4a6b6842ac37be691089c0f7758cfeec4d5fc0b4a258");
+      ADD_CHECKPOINT(1058600, "12904f6b4d9e60fd875674e07147d2c83d6716253f046af7b894c3e81da7e1bd");
       return true;
     }
     if (nettype == STAGENET)
@@ -207,8 +206,8 @@ namespace cryptonote
     ADD_CHECKPOINT(1390000, "a8f5649dd4ded60eedab475f2bec8c934681c07e3cf640e9be0617554f13ff6c");
     ADD_CHECKPOINT(1450000, "ac94e8860093bc7c83e4e91215cba1d663421ecf4067a0ae609c3a8b52bcfac2");
     ADD_CHECKPOINT(1530000, "01759bce497ec38e63c78b1038892169203bb78f87e488172f6b854fcd63ba7e");
-    
-
+    ADD_CHECKPOINT(1579000, "7d0d7a2346373afd41ed1e744a939fc5d474a7dbaa257be5c6fff4009e789241");
+    ADD_CHECKPOINT(1668900, "ac2dcaf3d2f58ffcf8391639f0f1ebafcb8eac43c49479c7c37f611868d07568");
     return true;
   }
 
