@@ -12,7 +12,7 @@
 - Pull all submodules ``` git submodule update --init --recursive --remote ```.
 - If it doesn't auto pull external/unbound submodule do ``` cd external/unbound && git pull origin monero ```
 - build monero as normal
-- then as an Example : ```$ cd build/release/src/wallet/api/```
+- then as an Example : ```$ cd pymonero/build/Linux/master/release/src/wallet/api/``` ( use Darwin folder instead of Linux if on OSX)
 - ``` $ python   ```
 - ``` >>> import pywallet_api ```
 - ``` >>> wm = pywallet_api.WalletManagerFactory.getWalletManager() ```
