@@ -20,7 +20,8 @@ RUN set -ex && \
         automake \
         bzip2 \
         xsltproc \
-        gperf
+        gperf \
+        python3-dev
 
 WORKDIR /usr/local
 
