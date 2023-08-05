@@ -36,16 +36,16 @@ class Wallet(object):
         self.rpc = JSONRPC('{protocol}://{host}:{port}{path}'.format(protocol=protocol, host=host, port=port, path=path))
 
     def make_uniform_destinations(self, address, transfer_amount, transfer_number_of_destinations=1):
-        destinations = []
-        for i in range(transfer_number_of_destinations):
-            destinations.append({"amount":transfer_amount,"address":address})
-        return destinations
+        return [
+            {"amount": transfer_amount, "address": address}
+            for _ in range(transfer_number_of_destinations)
+        ]
 
     def make_destinations(self, addresses, transfer_amounts):
-        destinations = []
-        for i in range(len(addresses)):
-            destinations.append({'amount':transfer_amounts[i],'address':addresses[i]})
-        return destinations
+        return [
+            {'amount': transfer_amounts[i], 'address': addresses[i]}
+            for i in range(len(addresses))
+        ]
 
     def transfer(self, destinations, ringsize=7, payment_id=''):
         transfer = {
@@ -83,12 +83,12 @@ class Wallet(object):
         create_wallet = {
             'method': 'create_wallet',
             'params': {
-                'filename': 'testWallet' + index,
-                'password' : '',
-                'language' : 'English'
+                'filename': f'testWallet{index}',
+                'password': '',
+                'language': 'English',
             },
-            'jsonrpc': '2.0', 
-            'id': '0'
+            'jsonrpc': '2.0',
+            'id': '0',
         }
         return self.rpc.send_request(create_wallet)
 

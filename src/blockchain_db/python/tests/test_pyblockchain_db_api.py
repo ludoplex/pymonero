@@ -17,7 +17,7 @@ class TestPyBlockchainDB(unittest.TestCase):
         db.open("~/.bitmonero/lmdb", 0)
         h = db.top_block_hash()
 
-        print(" printing hash :" + h.data())
+        print(f" printing hash :{h.data()}")
         self.assertTrue(isinstance(h.data(), str))
 
 if __name__ == '__main__':

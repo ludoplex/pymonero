@@ -57,7 +57,7 @@ class SpeedTest():
         destinations = wallet.make_uniform_destinations('44AFFq5kSiGBoZ4NMDwYtN18obc8AemS33DBLWs3H7otXft3XjrpDtQGv7SqSsaBYBb98uNbr2VBBEt7f2wfn3RVGQBEP3A',1,3)
 
         self._test_speed_generateblocks(daemon=daemon, blocks=70)
-        for i in range(1, 10):
+        for _ in range(1, 10):
             while wallet.get_balance()['unlocked_balance'] == 0:
                 print('Waiting for wallet to refresh...')
                 sleep(1)
