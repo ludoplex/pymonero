@@ -97,7 +97,7 @@ def read_symbols(executable, imports=True):
     p = subprocess.Popen([READELF_CMD, '--dyn-syms', '-W', executable], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE, universal_newlines=True)
     (stdout, stderr) = p.communicate()
     if p.returncode:
-        raise IOError('Could not read symbols for %s: %s' % (executable, stderr.strip()))
+        raise IOError(f'Could not read symbols for {executable}: {stderr.strip()}')
     syms = []
     for line in stdout.splitlines():
         line = line.split()
@@ -116,10 +116,8 @@ def check_version(max_versions, version):
     else:
         lib = version
         ver = '0'
-    ver = tuple([int(x) for x in ver.split('.')])
-    if not lib in max_versions:
-        return False
-    return ver <= max_versions[lib]
+    ver = tuple(int(x) for x in ver.split('.'))
+    return False if lib not in max_versions else ver <= max_versions[lib]
 
 def read_libraries(filename):
     p = subprocess.Popen([READELF_CMD, '-d', '-W', filename], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE, universal_newlines=True)
@@ -130,9 +128,10 @@ def read_libraries(filename):
     for line in stdout.splitlines():
         tokens = line.split()
         if len(tokens)>2 and tokens[1] == '(NEEDED)':
-            match = re.match('^Shared library: \[(.*)\]$', ' '.join(tokens[2:]))
-            if match:
-                libraries.append(match.group(1))
+            if match := re.match(
+                '^Shared library: \[(.*)\]$', ' '.join(tokens[2:])
+            ):
+                libraries.append(match[1])
             else:
                 raise ValueError('Unparseable (NEEDED) specification')
     return libraries
@@ -144,18 +143,18 @@ if __name__ == '__main__':
         # Check imported symbols
         for sym,version in read_symbols(filename, True):
             if version and not check_version(MAX_VERSIONS, version):
-                print('%s: symbol %s from unsupported version %s' % (filename, cppfilt(sym), version))
+                print(f'{filename}: symbol {cppfilt(sym)} from unsupported version {version}')
                 retval = 1
         # Check exported symbols
         for sym,version in read_symbols(filename, False):
             if sym in IGNORE_EXPORTS:
                 continue
-            print('%s: export of symbol %s not allowed' % (filename, cppfilt(sym)))
+            print(f'{filename}: export of symbol {cppfilt(sym)} not allowed')
             retval = 1
         # Check dependency libraries
         for library_name in read_libraries(filename):
             if library_name not in ALLOWED_LIBRARIES:
-                print('%s: NEEDED library %s is not allowed' % (filename, library_name))
+                print(f'{filename}: NEEDED library {library_name} is not allowed')
                 retval = 1
 
     sys.exit(retval)
